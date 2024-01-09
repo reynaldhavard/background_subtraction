@@ -5,19 +5,22 @@
 #include <vector>
 
 int main(int argc, char **argv) {
+  std::string videoname;
   int K;
   double lr;
   double T;
-  if (argc == 4) {
-    K = std::stoi(argv[1]);
-    lr = std::stod(argv[2]);
-    T = std::stod(argv[3]);
+  if (argc == 5) {
+    videoname = argv[1];
+    K = std::stoi(argv[2]);
+    lr = std::stod(argv[3]);
+    T = std::stod(argv[4]);
   } else {
-    std::cerr << "Use as \"./backgroundSubtraction K lr T\"" << std::endl;
+    std::cerr << "Use as \"./backgroundSubtraction videoname K lr T\""
+              << std::endl;
     return 0;
   }
 
-  cv::VideoCapture cap("../data/vtest.avi");
+  cv::VideoCapture cap(videoname);
   if (!cap.isOpened()) {
     std::cerr << "Unable to open file!" << std::endl;
     return 0;
@@ -42,6 +45,7 @@ int main(int argc, char **argv) {
 
     cv::Mat foreground = cv::Mat::zeros(frame.size(), frame.type());
 
+#pragma omp parallel for
     for (int i = 0; i < height; ++i) {
       for (int j = 0; j < width; ++j) {
         cv::Vec3b &pixel = frame.at<cv::Vec3b>(i, j);
@@ -57,7 +61,7 @@ int main(int argc, char **argv) {
     cv::hconcat(frame, foreground, displayMat);
     cv::imshow("display", displayMat);
 
-    int keyboard = cv::waitKey(10);
+    int keyboard = cv::waitKey(30);
     if (keyboard == 'q' || keyboard == 27) {
       break;
     }
