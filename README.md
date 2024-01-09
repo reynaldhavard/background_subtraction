@@ -11,3 +11,10 @@ To use:
 -   `cmake --build .`
 -   `./backgroundSubtraction K lr T`, specifying values for K, lr and T.
 
+For the test video (that can be found [here](https://github.com/opencv/opencv/blob/4.x/samples/data/vtest.avi)), with the following parameters:
+
+-   `K = 4`,
+-   `lr = 0.05`,
+-   `T = 0.5`,
+    we obtain the following result (fps are set to the original video but implementation might be slower):
+    ![demo](demo.gif)
