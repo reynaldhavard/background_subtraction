@@ -1,8 +1,7 @@
 #include "MOG.h"
 #include <iostream>
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/videoio.hpp>
+#include <opencv2/opencv.hpp>
+#include <string>
 #include <vector>
 
 int main(int argc, char **argv) {
@@ -27,9 +26,6 @@ int main(int argc, char **argv) {
   int height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
   int width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
 
-  double fps = cap.get(cv::CAP_PROP_FPS);
-  int delay = static_cast<int>(1000 / fps);
-
   std::vector<std::vector<MOG>> mogVector(height, std::vector<MOG>(width));
   for (int i = 0; i < height; ++i) {
     for (int j = 0; j < width; ++j) {
@@ -51,10 +47,7 @@ int main(int argc, char **argv) {
         cv::Vec3b &pixel = frame.at<cv::Vec3b>(i, j);
         if (mogVector[i][j].update(pixel, lr, T)) {
           cv::Vec3b &fgPixel = foreground.at<cv::Vec3b>(i, j);
-          // fgPixel = pixel;
-          fgPixel[0] = 255;
-          fgPixel[1] = 255;
-          fgPixel[2] = 255;
+          fgPixel = pixel;
         }
       }
     }
@@ -64,8 +57,7 @@ int main(int argc, char **argv) {
     cv::hconcat(frame, foreground, displayMat);
     cv::imshow("display", displayMat);
 
-    // int keyboard = cv::waitKey(delay);
-    int keyboard = cv::waitKey(30);
+    int keyboard = cv::waitKey(10);
     if (keyboard == 'q' || keyboard == 27) {
       break;
     }

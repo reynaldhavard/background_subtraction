@@ -12,7 +12,8 @@ double Gaussian::distance(cv::Vec3b &pixel) {
 }
 
 double Gaussian::pdf(cv::Vec3b &pixel) {
-  return pow(2 * M_PI * variance, -3.0 / 2.0) * exp(-distance(pixel) / 2.0);
+  return pow(2 * M_PI * variance, -1.0 / 2.0) *
+         exp(-pow(distance(pixel), 2.0) / 2.0);
 }
 
 bool Gaussian::isMatch(cv::Vec3b &pixel) {
@@ -23,8 +24,7 @@ void Gaussian::reset(cv::Vec3b &pixel) {
   meanR = static_cast<double>(pixel[0]);
   meanG = static_cast<double>(pixel[1]);
   meanB = static_cast<double>(pixel[2]);
-  variance = 100;
-  weight = 0;
+  variance = 20;
 }
 
 void Gaussian::adjust(cv::Vec3b &pixel, double lr) {
@@ -37,9 +37,9 @@ void Gaussian::adjust(cv::Vec3b &pixel, double lr) {
   meanB = (1 - rho) * meanB + rho * pixelB;
   variance = (1 - rho) * variance +
              rho * (pow(pixelR - meanR, 2) + pow(pixelG - meanG, 2) +
-                    pow(pixelB - meanG, 2));
+                    pow(pixelB - meanB, 2));
 }
 
-bool compareGaussian(const Gaussian &g1, const Gaussian &g2) {
-  return g1.getWeightVarianceRatio() < g2.getWeightVarianceRatio();
+bool compareGaussianDesc(const Gaussian &g1, const Gaussian &g2) {
+  return g1.getWeightStdRatio() > g2.getWeightStdRatio();
 }

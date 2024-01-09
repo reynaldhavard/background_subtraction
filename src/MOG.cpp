@@ -3,13 +3,15 @@
 MOG::MOG(int _K) : K(_K) {
   gaussians.resize(K);
   for (int k = 0; k < K; ++k) {
-    gaussians[k] = Gaussian(-1, -1, -1, 1, 1.0 / K);
+    gaussians[k] = Gaussian(-1, -1, -1, 10, 1.0 / K);
   }
 }
 
 void MOG::sortGaussians(int limit) {
-  std::sort(gaussians.begin(), gaussians.begin() + limit + 1, compareGaussian);
+  std::sort(gaussians.begin(), gaussians.begin() + limit + 1,
+            compareGaussianDesc);
 }
+
 int MOG::getNBackground(double T) {
   double sum = 0;
   int B = 1;

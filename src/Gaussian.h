@@ -33,7 +33,7 @@ public:
 
   void setWeight(double _weight) { weight = _weight; }
 
-  double getWeightVarianceRatio() const { return weight / sqrt(variance); }
+  double getWeightStdRatio() const { return weight / sqrt(variance); }
 };
 
-bool compareGaussian(const Gaussian &g1, const Gaussian &g2);
+bool compareGaussianDesc(const Gaussian &g1, const Gaussian &g2);
