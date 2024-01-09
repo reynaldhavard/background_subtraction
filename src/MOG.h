@@ -14,7 +14,7 @@ public:
 
   void sortGaussians(int limit);
 
-  int getNBackground(double T);
+  int getBackgroundLimit(double T);
 
   void adjustWeights(int modifiedIndex, double lr);
 

@@ -12,7 +12,7 @@ void MOG::sortGaussians(int limit) {
             compareGaussianDesc);
 }
 
-int MOG::getNBackground(double T) {
+int MOG::getBackgroundLimit(double T) {
   double sum = 0;
   int B = 1;
   for (int k = 0; k < K - 1; ++k) {
@@ -44,7 +44,7 @@ void MOG::adjustWeights(int modifiedIndex, double lr) {
 bool MOG::update(cv::Vec3b &pixel, double lr, double T) {
   bool isForeground = false;
 
-  int B = getNBackground(T);
+  int B = getBackgroundLimit(T);
 
   int matchIndex = K;
   for (int k = 0; k < K; ++k) {
