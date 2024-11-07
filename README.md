@@ -10,7 +10,7 @@ To use:
 
 -   create a `build` folder
 -   `cmake ../`
--   `cmake --build .`
+-   `make`
 -   `./backgroundSubtraction videoname K lr T`, specifying values for videoname, K, lr and T.
 
 For the test video (that can be found [here](https://github.com/opencv/opencv/blob/4.x/samples/data/vtest.avi)), with the following parameters:

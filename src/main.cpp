@@ -26,8 +26,8 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-  int height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
-  int width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+  const int height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+  const int width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
 
   std::vector<std::vector<MOG>> mogVector(height, std::vector<MOG>(width));
   for (int i = 0; i < height; ++i) {
@@ -45,13 +45,12 @@ int main(int argc, char **argv) {
 
     cv::Mat foreground = cv::Mat::zeros(frame.size(), frame.type());
 
-#pragma omp parallel for
+#pragma omp parallel for collapse(2) schedule(dynamic, 16)
     for (int i = 0; i < height; ++i) {
       for (int j = 0; j < width; ++j) {
         cv::Vec3b &pixel = frame.at<cv::Vec3b>(i, j);
         if (mogVector[i][j].update(pixel, lr, T)) {
-          cv::Vec3b &fgPixel = foreground.at<cv::Vec3b>(i, j);
-          fgPixel = pixel;
+          foreground.at<cv::Vec3b>(i, j) = pixel;
         }
       }
     }

@@ -1,23 +1,28 @@
 #include "Gaussian.h"
 
 double Gaussian::distance(cv::Vec3b &pixel) {
-  double pixelR = static_cast<double>(pixel[0]);
-  double pixelG = static_cast<double>(pixel[1]);
-  double pixelB = static_cast<double>(pixel[2]);
-  double dist = sqrt(1 / variance *
-                     (pow(pixelR - meanR, 2) + pow(pixelG - meanG, 2) +
-                      pow(pixelB - meanB, 2)));
+  const double pixelR = pixel[0];
+  const double pixelG = pixel[1];
+  const double pixelB = pixel[2];
+
+  const double varInv = 1.0 / variance;
+  double dist = ((pixelR - meanR) * (pixelR - meanR) +
+                 (pixelB - meanB) * (pixelB - meanB) +
+                 (pixelG - meanG) * (pixelG - meanG)) *
+                varInv;
 
   return dist;
 }
 
 double Gaussian::pdf(cv::Vec3b &pixel) {
-  return pow(2 * M_PI * variance, -1.0 / 2.0) *
-         exp(-pow(distance(pixel), 2.0) / 2.0);
+  const double dist = distance(pixel);
+
+  return (1.0 / (variance * sqrt(2.0 * M_PI)) * exp(-dist / 2.0));
 }
 
 bool Gaussian::isMatch(cv::Vec3b &pixel) {
-  return (distance(pixel) <= 2.5 * sqrt(variance));
+  const double threshold = 2.5 * 2.5 * variance;
+  return distance(pixel) <= threshold;
 }
 
 void Gaussian::reset(cv::Vec3b &pixel) {
@@ -28,16 +33,20 @@ void Gaussian::reset(cv::Vec3b &pixel) {
 }
 
 void Gaussian::adjust(cv::Vec3b &pixel, double lr) {
-  double rho = lr * pdf(pixel);
-  double pixelR = static_cast<double>(pixel[0]);
-  double pixelG = static_cast<double>(pixel[1]);
-  double pixelB = static_cast<double>(pixel[2]);
+  const double rho = lr * pdf(pixel);
+  const double pixelR = pixel[0];
+  const double pixelG = pixel[1];
+  const double pixelB = pixel[2];
+
   meanR = (1 - rho) * meanR + rho * pixelR;
   meanG = (1 - rho) * meanG + rho * pixelG;
   meanB = (1 - rho) * meanB + rho * pixelB;
+
+  const double diffR = pixelR - meanR;
+  const double diffG = pixelG - meanG;
+  const double diffB = pixelB - meanB;
   variance = (1 - rho) * variance +
-             rho * (pow(pixelR - meanR, 2) + pow(pixelG - meanG, 2) +
-                    pow(pixelB - meanB, 2));
+             rho * (diffR * diffR + diffG * diffG + diffB * diffB);
 }
 
 bool compareGaussianDesc(const Gaussian &g1, const Gaussian &g2) {

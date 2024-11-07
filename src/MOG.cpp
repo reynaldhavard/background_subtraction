@@ -42,7 +42,6 @@ void MOG::adjustWeights(int modifiedIndex, double lr) {
 }
 
 bool MOG::update(cv::Vec3b &pixel, double lr, double T) {
-  bool isForeground = false;
 
   int B = getBackgroundLimit(T);
 
@@ -53,15 +52,13 @@ bool MOG::update(cv::Vec3b &pixel, double lr, double T) {
       break;
     }
   }
-  if (matchIndex > B) {
-    isForeground = true;
-  }
+  const bool isForeground = (matchIndex > B);
   if (matchIndex == K) {
     gaussians[K - 1].reset(pixel);
   } else {
     gaussians[matchIndex].adjust(pixel, lr);
   }
-  int modifiedIndex = std::min(matchIndex, K - 1);
+  const int modifiedIndex = std::min(matchIndex, K - 1);
   adjustWeights(modifiedIndex, lr);
   sortGaussians(modifiedIndex);
 
